@@ -118,11 +118,26 @@ class EnhancedSaraApp {
       }
       
       if (e.target.matches('[data-favorite]')) {
+        e.preventDefault();
+        e.stopPropagation();
         this.toggleFavorite(e.target.dataset.favorite);
       }
       
       if (e.target.matches('[data-share]')) {
+        e.preventDefault();
+        e.stopPropagation();
         this.shareListing(e.target.dataset.share, e.target.dataset.title);
+      }
+      
+      // Handle onclick attributes
+      const onclick = e.target.getAttribute('onclick');
+      if (onclick && onclick.includes('app.')) {
+        e.preventDefault();
+        try {
+          eval(onclick);
+        } catch (error) {
+          console.error('Click handler error:', error);
+        }
       }
     });
 
@@ -1495,6 +1510,136 @@ class EnhancedSaraApp {
     this.showSnackbar('Ma\'lumotlar eksport qilindi', 'success');
   }
 
+  importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (data.favorites) this.favorites = data.favorites;
+            if (data.settings) this.settings = data.settings;
+            localStorage.setItem('favorites', JSON.stringify(this.favorites));
+            localStorage.setItem('settings', JSON.stringify(this.settings));
+            this.showSnackbar('Ma\'lumotlar import qilindi', 'success');
+          } catch (error) {
+            this.showSnackbar('Fayl noto\'g\'ri', 'error');
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  }
+
+  toggleNotifications() {
+    this.settings.notifications = !this.settings.notifications;
+    this.saveSettings();
+    this.showSnackbar(`Bildirishnomalar ${this.settings.notifications ? 'yoqildi' : 'o\'chirildi'}`, 'success');
+  }
+
+  performAdvancedSearch(formData) {
+    const data = Object.fromEntries(formData);
+    let filtered = this.listings;
+    
+    if (data.query) {
+      const query = data.query.toLowerCase();
+      filtered = filtered.filter(l => 
+        l.title.toLowerCase().includes(query) ||
+        l.description?.toLowerCase().includes(query) ||
+        l.location.toLowerCase().includes(query)
+      );
+    }
+    
+    if (data.location) {
+      filtered = filtered.filter(l => l.location.toLowerCase().includes(data.location.toLowerCase()));
+    }
+    
+    if (data.property_type) {
+      filtered = filtered.filter(l => l.property_type === data.property_type);
+    }
+    
+    if (data.min_price) {
+      filtered = filtered.filter(l => l.price >= parseFloat(data.min_price));
+    }
+    
+    if (data.max_price) {
+      filtered = filtered.filter(l => l.price <= parseFloat(data.max_price));
+    }
+    
+    if (data.rooms) {
+      filtered = filtered.filter(l => l.rooms == data.rooms || (data.rooms === '4+' && l.rooms >= 4));
+    }
+    
+    // Add to search history
+    if (data.query && !this.searchHistory.includes(data.query)) {
+      this.searchHistory.unshift(data.query);
+      this.searchHistory = this.searchHistory.slice(0, 10);
+      localStorage.setItem('searchHistory', JSON.stringify(this.searchHistory));
+    }
+    
+    const resultsContainer = document.getElementById('search-results');
+    if (resultsContainer) {
+      if (filtered.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="text-center p-16">
+            <div style="font-size: 48px; margin-bottom: 16px;">🔍</div>
+            <h3 class="title-medium">Natija topilmadi</h3>
+          </div>
+        `;
+      } else {
+        resultsContainer.innerHTML = `
+          <h3 class="title-medium mb-16">🔍 Natijalar (${filtered.length})</h3>
+          ${filtered.map(listing => `
+            <div class="md-card mb-8 cursor-pointer" onclick="app.showPage('listing-${listing.id}')">
+              <h4 class="title-medium mb-4">${listing.title}</h4>
+              <div class="body-medium mb-8">
+                💰 $${Number(listing.price).toLocaleString()} • 
+                📍 ${listing.location} • 
+                🚪 ${listing.rooms} xona
+              </div>
+              <p class="body-small">${listing.description?.substring(0, 100)}...</p>
+            </div>
+          `).join('')}
+        `;
+      }
+    }
+    
+    this.showSnackbar(`${filtered.length} ta natija topildi`, 'success');
+  }
+
+  quickSearch(term) {
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+      searchInput.value = term;
+      this.search(term);
+    }
+  }
+
+  search(query) {
+    if (!query.trim()) {
+      this.renderListings();
+      return;
+    }
+    
+    const filtered = this.listings.filter(listing => 
+      listing.title.toLowerCase().includes(query.toLowerCase()) ||
+      listing.location.toLowerCase().includes(query.toLowerCase()) ||
+      listing.description?.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    this.renderListings(filtered);
+  }
+
+  loadMoreListings() {
+    // Placeholder for infinite scroll
+    console.log('Loading more listings...');
+  }
+
   refresh() {
     this.hapticFeedback('medium');
     this.showSnackbar('Yangilanmoqda...', 'info');
@@ -1505,4 +1650,20 @@ class EnhancedSaraApp {
 // Initialize enhanced app
 document.addEventListener('DOMContentLoaded', () => {
   window.app = new EnhancedSaraApp();
+});
+
+// Global error handler
+window.addEventListener('error', (e) => {
+  console.error('Global error:', e.error);
+  if (window.app) {
+    window.app.showSnackbar('Xatolik yuz berdi', 'error');
+  }
+});
+
+// Unhandled promise rejection handler
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('Unhandled promise rejection:', e.reason);
+  if (window.app) {
+    window.app.showSnackbar('Xatolik yuz berdi', 'error');
+  }
 });
