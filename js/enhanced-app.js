@@ -1137,6 +1137,364 @@ class EnhancedSaraApp {
     }
   }
 
+  async renderAddListing() {
+    const userId = this.tg?.initDataUnsafe?.user?.id || 123456789;
+    
+    return `
+      <div class="md-top-app-bar">
+        <button class="md-icon-button" onclick="history.back()">←</button>
+        <h1 class="title-large">➕ E'lon qo'shish</h1>
+      </div>
+      
+      <div class="p-16">
+        <form id="add-listing-form" class="space-y-16">
+          <div class="md-text-field">
+            <input type="text" name="title" required placeholder=" ">
+            <label>📝 Sarlavha *</label>
+          </div>
+          
+          <div class="md-text-field">
+            <textarea name="description" rows="4" placeholder=" "></textarea>
+            <label>📄 Tavsif</label>
+          </div>
+          
+          <div class="md-text-field">
+            <input type="number" name="price" required placeholder=" ">
+            <label>💰 Narx (USD) *</label>
+          </div>
+          
+          <div class="md-text-field">
+            <input type="text" name="location" required placeholder=" ">
+            <label>📍 Joylashuv *</label>
+          </div>
+          
+          <div class="md-text-field">
+            <select name="property_type" required>
+              <option value="">Tanlang</option>
+              <option value="kvartira">Kvartira</option>
+              <option value="uy">Uy</option>
+              <option value="ofis">Ofis</option>
+              <option value="dokon">Do'kon</option>
+            </select>
+            <label>🏠 Mulk turi *</label>
+          </div>
+          
+          <div class="flex gap-8">
+            <div class="md-text-field flex-1">
+              <input type="number" name="rooms" min="1" value="1" placeholder=" ">
+              <label>🚪 Xonalar</label>
+            </div>
+            <div class="md-text-field flex-1">
+              <input type="number" name="area" step="0.1" placeholder=" ">
+              <label>📏 Maydon (m²)</label>
+            </div>
+          </div>
+          
+          <input type="hidden" name="user_id" value="${userId}">
+          
+          <button type="submit" class="md-filled-button w-full">
+            ✅ E'lonni saqlash
+          </button>
+        </form>
+      </div>
+    `;
+  }
+
+  async renderProfile() {
+    const user = this.tg?.initDataUnsafe?.user || { first_name: 'User', id: 123456789 };
+    
+    return `
+      <div class="md-top-app-bar">
+        <button class="md-icon-button" onclick="history.back()">←</button>
+        <h1 class="title-large">👤 Profil</h1>
+      </div>
+      
+      <div class="p-16">
+        <div class="md-card text-center mb-16">
+          <div class="user-avatar-large" id="profileAvatar">
+            ${user.first_name?.charAt(0) || 'U'}
+          </div>
+          <h2 class="title-large">${user.first_name} ${user.last_name || ''}</h2>
+          ${user.username ? `<p class="body-medium">@${user.username}</p>` : ''}
+        </div>
+        
+        <div class="md-list">
+          <div class="md-list-item" onclick="app.showPage('favorites')">
+            <span style="font-size: 24px;">❤️</span>
+            <div class="md-list-item-content">
+              <div class="md-list-item-title">Sevimlilar</div>
+              <div class="md-list-item-subtitle">${this.favorites.length} ta e'lon</div>
+            </div>
+            <span>→</span>
+          </div>
+          
+          <div class="md-list-item" onclick="app.showPage('my-listings')">
+            <span style="font-size: 24px;">📋</span>
+            <div class="md-list-item-content">
+              <div class="md-list-item-title">Mening e'lonlarim</div>
+              <div class="md-list-item-subtitle">Barcha e'lonlarim</div>
+            </div>
+            <span>→</span>
+          </div>
+          
+          <div class="md-list-item" onclick="app.showPage('settings')">
+            <span style="font-size: 24px;">⚙️</span>
+            <div class="md-list-item-content">
+              <div class="md-list-item-title">Sozlamalar</div>
+              <div class="md-list-item-subtitle">Ilova sozlamalari</div>
+            </div>
+            <span>→</span>
+          </div>
+          
+          <div class="md-list-item" onclick="app.showPage('about')">
+            <span style="font-size: 24px;">ℹ️</span>
+            <div class="md-list-item-content">
+              <div class="md-list-item-title">Ilova haqida</div>
+              <div class="md-list-item-subtitle">Versiya va ma'lumotlar</div>
+            </div>
+            <span>→</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  async renderFavorites() {
+    const favoriteListings = this.listings.filter(l => this.favorites.includes(l.id));
+    
+    return `
+      <div class="md-top-app-bar">
+        <button class="md-icon-button" onclick="history.back()">←</button>
+        <h1 class="title-large">❤️ Sevimlilar</h1>
+      </div>
+      
+      <div class="p-16">
+        ${favoriteListings.length === 0 ? `
+          <div class="text-center p-16">
+            <div style="font-size: 64px; margin-bottom: 16px;">💔</div>
+            <h2 class="title-medium mb-8">Sevimlilar yo'q</h2>
+            <p class="body-medium mb-16">Hali hech qanday e'lonni sevimlilarga qo'shmagansiz</p>
+            <button class="md-filled-button" onclick="app.showPage('home')">E'lonlarni ko'rish</button>
+          </div>
+        ` : favoriteListings.map(listing => `
+          <div class="md-card fade-in mb-16">
+            <div class="flex justify-between items-center mb-8">
+              <h3 class="title-medium">${listing.title}</h3>
+              <button class="md-icon-button" data-favorite="${listing.id}">❤️</button>
+            </div>
+            <div class="body-medium mb-8">
+              💰 $${Number(listing.price).toLocaleString()} • 
+              📍 ${listing.location} • 
+              🚪 ${listing.rooms} xona
+            </div>
+            <p class="body-small mb-16">${listing.description?.substring(0, 100)}...</p>
+            <button class="md-filled-button w-full" onclick="app.showPage('listing-${listing.id}')">
+              Ko'rish
+            </button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  async renderMyListings() {
+    const userId = this.tg?.initDataUnsafe?.user?.id || 123456789;
+    const myListings = this.listings.filter(l => l.user_id == userId);
+    
+    return `
+      <div class="md-top-app-bar">
+        <button class="md-icon-button" onclick="history.back()">←</button>
+        <h1 class="title-large">📋 Mening e'lonlarim</h1>
+      </div>
+      
+      <div class="p-16">
+        ${myListings.length === 0 ? `
+          <div class="text-center p-16">
+            <div style="font-size: 64px; margin-bottom: 16px;">📝</div>
+            <h2 class="title-medium mb-8">E'lonlar yo'q</h2>
+            <p class="body-medium mb-16">Hali hech qanday e'lon qo'shmagansiz</p>
+            <button class="md-filled-button" onclick="app.showPage('add-listing')">Birinchi e'lonni qo'shish</button>
+          </div>
+        ` : myListings.map(listing => `
+          <div class="md-card fade-in mb-16">
+            <div class="flex justify-between items-center mb-8">
+              <h3 class="title-medium">${listing.title}</h3>
+              <div class="md-chip">${listing.status === 'approved' ? '✅ Tasdiqlangan' : '⏳ Kutilmoqda'}</div>
+            </div>
+            <div class="body-medium mb-8">
+              💰 $${Number(listing.price).toLocaleString()} • 
+              📍 ${listing.location} • 
+              👁️ ${listing.views || 0} ko'rilgan
+            </div>
+            <div class="flex gap-8">
+              <button class="md-outlined-button flex-1" onclick="app.showPage('listing-${listing.id}')">Ko'rish</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  async renderAbout() {
+    return `
+      <div class="md-top-app-bar">
+        <button class="md-icon-button" onclick="history.back()">←</button>
+        <h1 class="title-large">ℹ️ Ilova haqida</h1>
+      </div>
+      
+      <div class="p-16">
+        <div class="text-center mb-16">
+          <div style="font-size: 80px; margin-bottom: 16px;">🏠</div>
+          <h1 class="headline-medium mb-8">Sara Uylar</h1>
+          <p class="body-large mb-8">Versiya 1.0.0</p>
+          <p class="body-medium">Professional uy-joy e'lonlari platformasi</p>
+        </div>
+        
+        <div class="md-card mb-16">
+          <h3 class="title-medium mb-8">Xususiyatlar</h3>
+          <div class="body-medium">
+            • 🔍 Kengaytirilgan qidiruv<br>
+            • ❤️ Sevimlilar tizimi<br>
+            • 📱 Telegram integratsiyasi<br>
+            • 🌙 Tungi/kunduzgi rejim<br>
+            • 📤 Ulashish funksiyasi<br>
+            • 🔄 Pull-to-refresh
+          </div>
+        </div>
+        
+        <div class="md-card">
+          <h3 class="title-medium mb-8">Bog'lanish</h3>
+          <div class="body-medium">
+            📧 Email: support@sarauylar.uz<br>
+            🌐 Website: sarauylar.bigsaver.ru<br>
+            📱 Telegram: @SaraUylarbot
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  async renderHistory() {
+    return `
+      <div class="md-top-app-bar">
+        <button class="md-icon-button" onclick="history.back()">←</button>
+        <h1 class="title-large">📅 Tarix</h1>
+      </div>
+      
+      <div class="p-16">
+        ${this.viewHistory.length === 0 ? `
+          <div class="text-center p-16">
+            <div style="font-size: 64px; margin-bottom: 16px;">📅</div>
+            <h2 class="title-medium mb-8">Tarix bo'sh</h2>
+            <p class="body-medium">Hali hech qanday e'lonni ko'rmagansiz</p>
+          </div>
+        ` : this.viewHistory.map(item => `
+          <div class="md-card mb-8 cursor-pointer" onclick="app.showPage('listing-${item.id}')">
+            <h3 class="title-medium mb-4">${item.title}</h3>
+            <div class="body-medium">
+              💰 $${Number(item.price).toLocaleString()}<br>
+              🕰️ ${new Date(item.viewedAt).toLocaleDateString()}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  async render404() {
+    return `
+      <div class="md-top-app-bar">
+        <button class="md-icon-button" onclick="history.back()">←</button>
+        <h1 class="title-large">404</h1>
+      </div>
+      
+      <div class="text-center p-16">
+        <div style="font-size: 64px; margin-bottom: 16px;">😕</div>
+        <h2 class="title-medium mb-8">Sahifa topilmadi</h2>
+        <p class="body-medium mb-16">Siz qidirayotgan sahifa mavjud emas</p>
+        <button class="md-filled-button" onclick="app.showPage('home')">Bosh sahifaga qaytish</button>
+      </div>
+    `;
+  }
+
+  async submitListing(formData) {
+    try {
+      const data = Object.fromEntries(formData);
+      
+      const response = await fetch('api/listings.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        this.showSnackbar('E\'lon qo\'shildi!', 'success');
+        this.showPage('home');
+      } else {
+        this.showSnackbar('Xatolik yuz berdi', 'error');
+      }
+    } catch (error) {
+      console.error('Submit error:', error);
+      this.showSnackbar('Xatolik yuz berdi', 'error');
+    }
+  }
+
+  toggleFavorite(listingId) {
+    const id = parseInt(listingId);
+    const index = this.favorites.indexOf(id);
+    
+    if (index > -1) {
+      this.favorites.splice(index, 1);
+      this.showSnackbar('Sevimlilardan olib tashlandi', 'info');
+    } else {
+      this.favorites.push(id);
+      this.showSnackbar('Sevimlilarga qo\'shildi', 'success');
+    }
+    
+    localStorage.setItem('favorites', JSON.stringify(this.favorites));
+    this.updateFavoriteButtons();
+    this.hapticFeedback();
+  }
+
+  updateFavoriteButtons() {
+    document.querySelectorAll('[data-favorite]').forEach(btn => {
+      const id = parseInt(btn.dataset.favorite);
+      btn.textContent = this.favorites.includes(id) ? '❤️' : '🤍';
+    });
+  }
+
+  filterByType(type) {
+    const filtered = type ? this.listings.filter(l => l.property_type === type) : this.listings;
+    this.renderListings(filtered);
+    this.showSnackbar(`${type || 'Barcha'} e'lonlari ko'rsatildi`, 'info');
+  }
+
+  clearCache() {
+    localStorage.clear();
+    this.favorites = [];
+    this.showSnackbar('Kesh tozalandi', 'success');
+  }
+
+  exportData() {
+    const data = {
+      favorites: this.favorites,
+      settings: this.settings,
+      exported_at: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sara-uylar-data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    this.showSnackbar('Ma\'lumotlar eksport qilindi', 'success');
+  }
+
   refresh() {
     this.hapticFeedback('medium');
     this.showSnackbar('Yangilanmoqda...', 'info');
