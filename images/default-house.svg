@@ -1,0 +1,7 @@
+<svg width="320" height="200" viewBox="0 0 320 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="320" height="200" fill="#F3F4F6"/>
+<path d="M160 40L240 100H200V160H120V100H80L160 40Z" fill="#666666"/>
+<rect x="140" y="120" width="40" height="40" fill="#444444"/>
+<rect x="160" y="80" width="20" height="20" fill="#333333"/>
+<text x="160" y="185" font-family="Arial, sans-serif" font-size="14" fill="#999999" text-anchor="middle">Sara Uylar</text>
+</svg>
