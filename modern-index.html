@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Sara Uylar - Ko'chmas mulk platformasi</title>
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/modern-real-estate.css">
+    
+    <!-- PWA Meta -->
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Sara Uylar">
+    
+    <!-- Telegram Web App -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <!-- Pull to Refresh Indicator -->
+    <div class="pull-to-refresh">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Sara Uylar</div>
+            <div class="header-actions">
+                <button class="btn-icon" id="themeToggle">🌙</button>
+                <button class="btn-icon" id="notificationBtn">🔔</button>
+                <button class="btn-icon" id="menuBtn">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="Uy, kvartira, ofis qidiring...">
+            <button class="search-btn" id="searchBtn">🔍</button>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">Barchasi</button>
+        <button class="filter-tab" data-filter="sale">Sotish</button>
+        <button class="filter-tab" data-filter="rent">Ijara</button>
+        <button class="filter-tab" data-filter="apartment">Kvartira</button>
+        <button class="filter-tab" data-filter="house">Uy</button>
+        <button class="filter-tab" data-filter="commercial">Tijorat</button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="listings-grid" id="listingsGrid">
+            <!-- Listings will be loaded here -->
+        </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="addListingFab" title="E'lon qo'shish">
+        ➕
+    </button>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-page="home">
+            <div>🏠</div>
+            <span>Bosh sahifa</span>
+        </button>
+        <button class="nav-item" data-page="search">
+            <div>🔍</div>
+            <span>Qidiruv</span>
+        </button>
+        <button class="nav-item" data-page="add">
+            <div>➕</div>
+            <span>Qo'shish</span>
+        </button>
+        <button class="nav-item" data-page="favorites">
+            <div>❤️</div>
+            <span>Sevimlilar</span>
+        </button>
+        <button class="nav-item" data-page="profile">
+            <div>👤</div>
+            <span>Profil</span>
+        </button>
+    </nav>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="js/modern-real-estate-app.js"></script>
+    
+    <style>
+        /* Additional Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideUp 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-body img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .listing-details .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .listing-details .location {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .listing-details .description {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .listing-details .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .listing-details .features span {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-primary, .btn-secondary {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Toast Styles */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 1rem 1.5rem;
+            border-radius: 25px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1001;
+            transition: all 0.3s ease;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .toast-error {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Loading improvements */
+        .loading {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+        }
+
+        /* Empty state improvements */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state h3 {
+            margin: 1rem 0 0.5rem;
+            color: var(--text-primary);
+        }
+    </style>
+</body>
+</html>
