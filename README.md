@@ -106,14 +106,40 @@ define('ADMIN_ID', 'your_admin_id');
 
 ## 📦 O'rnatish
 
-1. Fayllarni serverga yuklash
-2. Ruxsatlar berish:
+### 1. Fayllarni serverga yuklash
+```bash
+git clone <repository-url>
+cd Sara-uylar
+```
+
+### 2. Ruxsatlar berish
 ```bash
 chmod 755 uploads/ data/
+chmod 644 data/*.json
 ```
-3. Bot token sozlash
-4. Webhook o'rnatish
-5. Web App test qilish
+
+### 3. Konfiguratsiya
+`config.php` faylida sozlamalarni o'zgartiring:
+```php
+define('BOT_TOKEN', 'your_bot_token_here');
+define('WEBAPP_URL', 'https://your-domain.com');
+define('ADMIN_ID', 'your_telegram_id');
+```
+
+### 4. Bot o'rnatish
+```bash
+# Webhook o'rnatish
+https://your-domain.com/setup_bot.php
+
+# Bot test qilish
+https://your-domain.com/test_bot.php
+
+# Debug (agar kerak bo'lsa)
+https://your-domain.com/debug_bot.php
+```
+
+### 5. Web App test qilish
+Brauzerda `https://your-domain.com` ochib test qiling
 
 ## 🔒 Xavfsizlik
 

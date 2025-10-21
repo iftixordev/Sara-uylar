@@ -1,4 +1,4 @@
-/* Modern Real Estate Design */
+/* Sara Uylar - Modern Real Estate CSS */
 :root {
   --primary: #2563eb;
   --primary-dark: #1d4ed8;
@@ -43,6 +43,7 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   overflow-x: hidden;
+  padding-bottom: 80px;
 }
 
 /* Header */
@@ -72,11 +73,6 @@ body {
   gap: 0.5rem;
 }
 
-.logo::before {
-  content: "🏠";
-  font-size: 1.8rem;
-}
-
 .header-actions {
   display: flex;
   gap: 0.5rem;
@@ -94,6 +90,7 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 1.2rem;
 }
 
 .btn-icon:hover {
@@ -143,6 +140,7 @@ body {
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 1.2rem;
 }
 
 .search-btn:hover {
@@ -183,7 +181,12 @@ body {
   transform: translateY(-1px);
 }
 
-/* Property Cards */
+/* Main Content */
+.main-content {
+  min-height: calc(100vh - 200px);
+}
+
+/* Listings Grid */
 .listings-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -193,7 +196,8 @@ body {
   margin: 0 auto;
 }
 
-.property-card {
+/* Listing Cards */
+.listing-card {
   background: var(--bg-card);
   border-radius: 16px;
   overflow: hidden;
@@ -201,103 +205,78 @@ body {
   transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
+  animation: fadeInUp 0.6s ease forwards;
 }
 
-.property-card:hover {
+.listing-card:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-lg);
 }
 
-.property-image {
+.listing-image {
   position: relative;
   height: 200px;
   overflow: hidden;
 }
 
-.property-image img {
+.listing-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
 
-.property-card:hover .property-image img {
+.listing-card:hover .listing-image img {
   transform: scale(1.1);
 }
 
-.property-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.badge-sale {
-  background: var(--gradient-success);
-  color: white;
-}
-
-.badge-rent {
-  background: var(--gradient-warning);
-  color: var(--text-primary);
-}
-
-.property-actions {
+.favorite-btn {
   position: absolute;
   top: 12px;
   right: 12px;
-  display: flex;
-  gap: 0.5rem;
-}
-
-.action-btn {
   width: 32px;
   height: 32px;
   border: none;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.9);
-  color: var(--text-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
+  font-size: 1.2rem;
 }
 
-.action-btn:hover {
+.favorite-btn:hover {
   background: white;
   transform: scale(1.1);
 }
 
-.action-btn.favorited {
+.favorite-btn.active {
   background: var(--danger);
   color: white;
 }
 
-.property-content {
+.listing-content {
   padding: 1.5rem;
 }
 
-.property-price {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary);
-  margin-bottom: 0.5rem;
-}
-
-.property-title {
+.listing-content h3 {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: var(--text-primary);
 }
 
-.property-location {
+.price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.location {
   color: var(--text-secondary);
   font-size: 0.9rem;
   margin-bottom: 1rem;
@@ -306,57 +285,29 @@ body {
   gap: 0.25rem;
 }
 
-.property-location::before {
-  content: "📍";
-}
-
-.property-features {
+.features {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-bottom: 1rem;
-}
-
-.feature {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
 
-.property-footer {
+.listing-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-top: 1rem;
   border-top: 1px solid var(--border);
-}
-
-.property-date {
   font-size: 0.8rem;
   color: var(--text-secondary);
-}
-
-.contact-btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 20px;
-  background: var(--primary);
-  color: white;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.contact-btn:hover {
-  background: var(--primary-dark);
-  transform: scale(1.05);
 }
 
 /* Floating Action Button */
 .fab {
   position: fixed;
-  bottom: 2rem;
+  bottom: 100px;
   right: 2rem;
   width: 60px;
   height: 60px;
@@ -403,6 +354,10 @@ body {
   font-size: 0.75rem;
 }
 
+.nav-item div {
+  font-size: 1.2rem;
+}
+
 .nav-item.active {
   color: var(--primary);
   transform: translateY(-2px);
@@ -412,12 +367,216 @@ body {
   color: var(--primary);
 }
 
+/* Forms */
+.add-listing-form, .search-page, .profile-page, .settings-page, .stats-page, .about-page, .help-page {
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-primary, .btn-secondary {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background: var(--border);
+}
+
+/* Profile */
+.profile-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 1rem;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Menu Items */
+.menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.menu-item {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.menu-item:hover {
+  background: var(--border);
+  transform: translateX(4px);
+}
+
+/* Listing Details */
+.listing-details {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.listing-details .listing-image {
+  height: 300px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.listing-details h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.listing-details .price {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.listing-details .features {
+  margin: 1rem 0;
+}
+
+.listing-details .features span {
+  padding: 0.25rem 0.75rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+
+.description {
+  margin: 1.5rem 0;
+  line-height: 1.8;
+}
+
+.contact-info {
+  background: var(--bg-secondary);
+  padding: 1rem;
+  border-radius: 12px;
+  margin: 1.5rem 0;
+}
+
+.listing-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
 /* Loading States */
 .loading {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 3rem;
+  grid-column: 1 / -1;
 }
 
 .spinner {
@@ -439,31 +598,102 @@ body {
   text-align: center;
   padding: 3rem 1rem;
   color: var(--text-secondary);
+  grid-column: 1 / -1;
 }
 
-.empty-state-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
+.empty-state h3 {
+  margin: 1rem 0 0.5rem;
+  color: var(--text-primary);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .listings-grid {
-    grid-template-columns: 1fr;
-    padding: 0.5rem;
-  }
-  
-  .property-card {
-    margin-bottom: 1rem;
-  }
-  
-  .filter-tabs {
-    padding: 0.5rem;
-  }
-  
-  .header-content {
-    padding: 0 0.5rem;
-  }
+/* Toast */
+#toastContainer {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1001;
+}
+
+.toast {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 1rem 1.5rem;
+  border-radius: 25px;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 0.5rem;
+  transform: translateY(100px);
+  transition: all 0.3s ease;
+  max-width: 300px;
+  text-align: center;
+}
+
+.toast.show {
+  transform: translateY(0);
+}
+
+.toast-success {
+  background: var(--success);
+  color: white;
+}
+
+.toast-error {
+  background: var(--danger);
+  color: white;
+}
+
+.toast-info {
+  background: var(--primary);
+  color: white;
+}
+
+/* Pull to Refresh */
+.pull-to-refresh {
+  position: fixed;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem;
+  background: var(--bg-card);
+  border-radius: 25px;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  opacity: 0;
+}
+
+/* Advanced Search */
+.advanced-search {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.price-range, .area-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+/* Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.stat-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Animations */
@@ -478,31 +708,66 @@ body {
   }
 }
 
-.property-card {
-  animation: fadeInUp 0.6s ease forwards;
-}
-
-.property-card:nth-child(even) {
+.listing-card:nth-child(even) {
   animation-delay: 0.1s;
 }
 
-.property-card:nth-child(3n) {
+.listing-card:nth-child(3n) {
   animation-delay: 0.2s;
 }
 
-/* Pull to Refresh */
-.pull-to-refresh {
-  position: absolute;
-  top: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 1rem;
-  background: var(--bg-card);
-  border-radius: 25px;
-  box-shadow: var(--shadow);
-  transition: all 0.3s ease;
+/* Responsive */
+@media (max-width: 768px) {
+  .listings-grid {
+    grid-template-columns: 1fr;
+    padding: 0.5rem;
+    gap: 1rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-actions, .listing-actions {
+    flex-direction: column;
+  }
+  
+  .fab {
+    bottom: 90px;
+    right: 1rem;
+  }
+  
+  .filter-tabs {
+    padding: 0.5rem;
+  }
+  
+  .header-content {
+    padding: 0 0.5rem;
+  }
+  
+  .listing-details {
+    padding: 0.5rem;
+  }
 }
 
-.pull-to-refresh.visible {
-  top: 10px;
+@media (max-width: 480px) {
+  .search-input {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  .listing-card {
+    margin-bottom: 0.5rem;
+  }
+  
+  .add-listing-form, .search-page, .profile-page {
+    padding: 1rem;
+  }
 }

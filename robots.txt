@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /data/
+Disallow: /uploads/
+Disallow: /config.php
+Disallow: /setup_bot.php
+Disallow: /test_bot.php
+Disallow: /debug_bot.php
+
+Sitemap: https://sarauylar.bigsaver.ru/sitemap.xml

@@ -1,24 +1,49 @@
 {
-  "name": "Sara Uylar - Uy-joy e'lonlari",
+  "name": "Sara Uylar - Ko'chmas Mulk Platformasi",
   "short_name": "Sara Uylar",
-  "description": "Professional uy-joy e'lonlari platformasi",
+  "description": "Professional ko'chmas mulk e'lonlari platformasi Telegram Web App sifatida",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FFFBFE",
-  "theme_color": "#6750A4",
   "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "categories": ["business", "productivity", "lifestyle"],
+  "lang": "uz",
+  "scope": "/",
   "icons": [
     {
       "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏠%3C/text%3E%3C/svg%3E",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
       "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏠%3C/text%3E%3C/svg%3E",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
-  "categories": ["business", "productivity"],
-  "lang": "uz"
+  "shortcuts": [
+    {
+      "name": "E'lon qo'shish",
+      "short_name": "Qo'shish",
+      "description": "Yangi e'lon qo'shish",
+      "url": "/#add-listing",
+      "icons": [{
+        "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E➕%3C/text%3E%3C/svg%3E",
+        "sizes": "96x96"
+      }]
+    },
+    {
+      "name": "Qidiruv",
+      "short_name": "Qidiruv", 
+      "description": "E'lonlarni qidirish",
+      "url": "/#search",
+      "icons": [{
+        "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🔍%3C/text%3E%3C/svg%3E",
+        "sizes": "96x96"
+      }]
+    }
+  ]
 }
