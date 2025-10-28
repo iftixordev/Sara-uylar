@@ -18,6 +18,12 @@ class SaraUylarApp {
     }
 
     async checkAuth() {
+        // Always show login button initially
+        const loginBtn = document.getElementById('loginBtn');
+        if (loginBtn) {
+            loginBtn.style.display = 'block';
+        }
+        
         // Check if user is logged in via session
         try {
             const response = await fetch('check_auth.php');
@@ -25,20 +31,13 @@ class SaraUylarApp {
             
             if (data.logged_in) {
                 this.user = data.user;
-            } else {
-                // Show login button for non-authenticated users
-                const loginBtn = document.getElementById('loginBtn');
+                // Hide login button for authenticated users
                 if (loginBtn) {
-                    loginBtn.style.display = 'block';
+                    loginBtn.style.display = 'none';
                 }
             }
         } catch (error) {
             console.error('Auth check error:', error);
-            // Show login button on error
-            const loginBtn = document.getElementById('loginBtn');
-            if (loginBtn) {
-                loginBtn.style.display = 'block';
-            }
         }
     }
 
