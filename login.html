@@ -271,7 +271,7 @@
         </a>
 
         <div class="home-link">
-            <a href="index.html">← Bosh sahifaga qaytish</a>
+            <a href="/">← Bosh sahifaga qaytish</a>
         </div>
     </div>
 
@@ -332,7 +332,7 @@
                 if (result.success) {
                     showSuccess(action === 'login' ? 'Muvaffaqiyatli kirdingiz!' : 'Ro\'yxatdan o\'tdingiz!');
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        window.location.href = '/';
                     }, 1500);
                 } else {
                     showError(result.error);

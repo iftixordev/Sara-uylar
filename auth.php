@@ -39,7 +39,9 @@ switch ($action) {
             'source' => 'web'
         ]);
         
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         $_SESSION['user_id'] = $userId;
         $_SESSION['user_name'] = $name;
         
@@ -56,7 +58,9 @@ switch ($action) {
         $users = $db->read('users');
         foreach ($users as $user) {
             if ($user['phone'] === $phone) {
-                session_start();
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
                 
@@ -69,7 +73,9 @@ switch ($action) {
         break;
         
     case 'logout':
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         session_destroy();
         echo json_encode(['success' => true]);
         break;

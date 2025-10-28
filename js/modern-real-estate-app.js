@@ -6,14 +6,14 @@ class SaraUylarApp {
         this.listings = [];
         this.favorites = JSON.parse(localStorage.getItem('sara_favorites') || '[]');
         this.user = null;
-        this.checkAuth();
         this.init();
     }
 
-    init() {
+    async init() {
         this.setupTelegram();
         this.setupRouter();
         this.setupEventListeners();
+        await this.checkAuth();
         this.loadPage('home');
     }
 
@@ -25,20 +25,19 @@ class SaraUylarApp {
             
             if (data.logged_in) {
                 this.user = data.user;
-                // Hide login button, show user info
+            } else {
+                // Show login button for non-authenticated users
                 const loginBtn = document.getElementById('loginBtn');
                 if (loginBtn) {
-                    loginBtn.style.display = 'none';
+                    loginBtn.style.display = 'block';
                 }
-            } else if (!this.tg) {
-                // If not Telegram WebApp and not logged in, redirect to login
-                window.location.href = 'login.html';
-                return;
             }
         } catch (error) {
             console.error('Auth check error:', error);
-            if (!this.tg) {
-                window.location.href = 'login.html';
+            // Show login button on error
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn) {
+                loginBtn.style.display = 'block';
             }
         }
     }
