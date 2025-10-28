@@ -33,11 +33,10 @@
     <!-- Header -->
     <header class="header">
         <div class="header-content">
-            <div class="logo">Sara Uylar</div>
+            <div class="logo">🏠 Sara Uylar</div>
             <div class="header-actions">
+                <button class="btn-icon" id="profileBtn" data-page="profile">👤</button>
                 <button class="btn-icon" id="themeToggle">🌙</button>
-                <button class="btn-icon" id="notificationBtn">🔔</button>
-                <button class="btn-icon" id="menuBtn">☰</button>
             </div>
         </div>
     </header>
@@ -52,12 +51,11 @@
 
     <!-- Filter Tabs -->
     <div class="filter-tabs">
-        <button class="filter-tab active" data-filter="all">Barchasi</button>
+        <button class="filter-tab active" data-filter="all">Hammasi</button>
         <button class="filter-tab" data-filter="sale">Sotish</button>
         <button class="filter-tab" data-filter="rent">Ijara</button>
         <button class="filter-tab" data-filter="apartment">Kvartira</button>
         <button class="filter-tab" data-filter="house">Uy</button>
-        <button class="filter-tab" data-filter="commercial">Tijorat</button>
     </div>
 
     <!-- Main Content -->
@@ -67,32 +65,25 @@
         </div>
     </main>
 
-    <!-- Floating Action Button -->
-    <button class="fab" id="addListingFab" title="E'lon qo'shish">
-        ➕
-    </button>
+
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
         <button class="nav-item active" data-page="home">
             <div>🏠</div>
-            <span>Bosh sahifa</span>
+            <span>Bosh</span>
         </button>
         <button class="nav-item" data-page="search">
             <div>🔍</div>
             <span>Qidiruv</span>
         </button>
+        <button class="nav-item" data-page="favorites">
+            <div>❤️</div>
+            <span>Sevimli</span>
+        </button>
         <button class="nav-item" data-page="add">
             <div>➕</div>
             <span>Qo'shish</span>
-        </button>
-        <button class="nav-item" data-page="favorites">
-            <div>❤️</div>
-            <span>Sevimlilar</span>
-        </button>
-        <button class="nav-item" data-page="profile">
-            <div>👤</div>
-            <span>Profil</span>
         </button>
     </nav>
 

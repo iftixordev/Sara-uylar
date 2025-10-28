@@ -166,12 +166,101 @@ Bot va web app real-time statistika taqdim etadi:
 4. Domain sozlash
 5. Test va ishga tushirish
 
+## ✨ Yangi Xususiyatlar (v2.0)
+
+### 🔒 Xavfsizlik
+- ✅ Rate limiting
+- ✅ Input validation
+- ✅ CSRF himoyasi
+- ✅ XSS himoyasi
+- ✅ Secure headers
+
+### 📱 UX Yaxshilanishlari
+- ✅ Pagination
+- ✅ Advanced search
+- ✅ Loading states
+- ✅ Error handling
+- ✅ Toast notifications
+- ✅ Skeleton loading
+- ✅ Responsive design
+
+### 🎨 UI Yaxshilanishlari
+- ✅ Yangi animatsiyalar
+- ✅ Listing badges
+- ✅ Improved forms
+- ✅ Better typography
+- ✅ Dark theme support
+
+### 🔧 Texnik Yaxshilanishlar
+- ✅ Enhanced Service Worker
+- ✅ Offline support
+- ✅ Image optimization
+- ✅ Performance monitoring
+- ✅ Error reporting
+- ✅ API logging
+
+### 📊 Yangi API Endpoints
+- `GET /api/listings.php` - Pagination, search, filter
+- `POST /api/upload-image.php` - Rasm yuklash
+- Enhanced validation va error handling
+
+## 🛠 Texnik Talablar
+
+- **PHP:** 8.0+
+- **Extensions:** GD, JSON, cURL
+- **Permissions:** 755 (uploads, data)
+- **SSL:** Majburiy (HTTPS)
+- **Memory:** 128MB+
+
+## 📈 Performance
+
+- ⚡ Tez yuklash (< 2s)
+- 📱 Mobile-first design
+- 🔄 Offline qo'llab-quvvatlash
+- 💾 Smart caching
+- 🖼 Image optimization
+
+## 🔧 Sozlash va Optimizatsiya
+
+### Performance Monitoring
+```javascript
+// Browser console da
+app.logPerformance('action_name', performance.now());
+```
+
+### Cache Management
+```bash
+# Cache tozalash
+rm -rf data/rate_limit.json
+rm -rf data/api_logs.json
+```
+
+### Database Optimization
+```php
+// Eski loglarni tozalash
+$logs = array_slice($logs, -1000); // Oxirgi 1000 ta log
+```
+
 ## 📞 Yordam
 
 Muammolar yoki savollar uchun:
 - Bot: @SaraUylarbot
 - Inline: @SaraUylarbot [qidiruv]
 - Web: https://sarauylar.bigsaver.ru
+- Issues: GitHub repository
+
+## 🔄 Yangilanishlar
+
+### v2.0 (2024)
+- Xavfsizlik yaxshilanishlari
+- Performance optimizatsiya
+- UX/UI yaxshilanishlar
+- Offline qo'llab-quvvatlash
+
+### v1.0 (2024)
+- Asosiy funksionallik
+- Telegram bot integratsiya
+- PWA qo'llab-quvvatlash
 
 ## 📄 Litsenziya
 

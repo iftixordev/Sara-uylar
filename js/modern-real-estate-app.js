@@ -87,6 +87,11 @@ class SaraUylarApp {
                 this.showPage(e.target.dataset.page);
             }
             
+            if (e.target.id === 'profileBtn') {
+                e.preventDefault();
+                this.showPage('profile');
+            }
+            
             if (e.target.matches('.listing-card')) {
                 const id = e.target.dataset.listingId;
                 if (id) this.showPage('listing', id);
@@ -205,10 +210,27 @@ class SaraUylarApp {
         const grid = document.getElementById('listingsGrid');
         if (!grid) return;
 
-        grid.innerHTML = '<div class="loading">Yuklanmoqda...</div>';
+        this.showSkeletonLoading(grid);
         
-        await this.loadListings();
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const search = urlParams.get('search') || '';
+        const filter = urlParams.get('filter') || 'all';
+        const sort = urlParams.get('sort') || 'newest';
+        const page = parseInt(urlParams.get('page')) || 1;
+        
+        // Update search input
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) searchInput.value = search;
+        
+        // Update filter tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.filter === filter);
+        });
+        
+        await this.loadListings(page, search, filter, sort);
         this.renderListings();
+        this.renderPagination();
     }
 
     async renderSearchPage() {
@@ -258,67 +280,95 @@ class SaraUylarApp {
 
         grid.innerHTML = `
             <div class="add-listing-form">
-                <h2>Yangi e'lon qo'shish</h2>
+                <h2>📝 Yangi e'lon qo'shish</h2>
+                <p class="form-help">Barcha majburiy maydonlarni to'ldiring va aniq ma'lumotlar kiriting</p>
+                
                 <form id="addListingForm">
-                    <div class="form-group">
-                        <label>Sarlavha *</label>
-                        <input type="text" name="title" required>
+                    <div class="form-group required">
+                        <label>Sarlavha</label>
+                        <input type="text" name="title" required minlength="3" maxlength="100" 
+                               placeholder="Masalan: 3 xonali kvartira Toshkentda">
+                        <div class="form-help">Qisqa va aniq sarlavha yozing (3-100 belgi)</div>
                     </div>
                     
                     <div class="form-group">
                         <label>Tavsif</label>
-                        <textarea name="description" rows="4"></textarea>
+                        <textarea name="description" rows="4" maxlength="1000" 
+                                  placeholder="E'lon haqida batafsil ma'lumot..."></textarea>
+                        <div class="form-help">E'lon haqida batafsil yozing (maksimal 1000 belgi)</div>
                     </div>
                     
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Narx (USD) *</label>
-                            <input type="number" name="price" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Mulk turi *</label>
-                            <select name="property_type" required>
+                        <div class="form-group required">
+                            <label>E'lon turi</label>
+                            <select name="type" required>
                                 <option value="">Tanlang</option>
-                                <option value="apartment">Kvartira</option>
-                                <option value="house">Uy</option>
-                                <option value="commercial">Tijorat</option>
-                                <option value="office">Ofis</option>
+                                <option value="sale">Sotish</option>
+                                <option value="rent">Ijara</option>
                             </select>
                         </div>
+                        <div class="form-group required">
+                            <label>Narx (USD)</label>
+                            <input type="number" name="price" required min="1" max="999999999" 
+                                   placeholder="0">
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label>Joylashuv *</label>
-                        <input type="text" name="location" required>
+                    <div class="form-group required">
+                        <label>Mulk turi</label>
+                        <select name="property_type" required>
+                            <option value="">Tanlang</option>
+                            <option value="apartment">🏢 Kvartira</option>
+                            <option value="house">🏠 Uy</option>
+                            <option value="commercial">🏪 Tijorat</option>
+                            <option value="office">🏢 Ofis</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group required">
+                        <label>Joylashuv</label>
+                        <input type="text" name="location" required minlength="3" maxlength="100" 
+                               placeholder="Shahar, tuman, ko'cha">
+                        <div class="form-help">Aniq manzil kiriting</div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Xonalar</label>
-                            <input type="number" name="rooms" min="1" value="1">
+                            <label>Xonalar soni</label>
+                            <select name="rooms">
+                                <option value="1">1 xona</option>
+                                <option value="2">2 xona</option>
+                                <option value="3">3 xona</option>
+                                <option value="4">4 xona</option>
+                                <option value="5">5+ xona</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Maydon (m²)</label>
-                            <input type="number" name="area" step="0.1">
+                            <input type="number" name="area" step="0.1" min="1" max="10000" 
+                                   placeholder="0">
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label>Telefon</label>
-                        <input type="tel" name="phone">
+                        <label>Telefon raqami</label>
+                        <input type="tel" name="phone" pattern="[+]?[0-9\s\-\(\)]{7,15}" 
+                               placeholder="+998 90 123 45 67">
+                        <div class="form-help">Bog'lanish uchun telefon raqamingiz</div>
                     </div>
                     
                     <div class="form-group">
                         <label>Rasmlar</label>
                         <input type="file" name="images" accept="image/*" multiple>
+                        <div class="form-help">Maksimal 10 ta rasm (JPG, PNG)</div>
                     </div>
                     
                     <div class="form-actions">
                         <button type="button" class="btn-secondary" onclick="app.showPage('home')">
-                            Bekor qilish
+                            ❌ Bekor qilish
                         </button>
                         <button type="submit" class="btn-primary">
-                            E'lonni saqlash
+                            ✅ E'lonni saqlash
                         </button>
                     </div>
                 </form>
@@ -357,13 +407,23 @@ class SaraUylarApp {
         const userListings = this.listings.filter(listing => 
             listing.user_id == this.user?.id);
 
+        const userPhoto = this.user?.photo_url;
+        const userName = this.user?.first_name || 'Foydalanuvchi';
+        const userInitial = userName.charAt(0).toUpperCase();
+        
         grid.innerHTML = `
             <div class="profile-page">
                 <div class="profile-header">
-                    <div class="profile-avatar">
-                        ${this.user?.first_name?.charAt(0) || 'U'}
+                    <div class="profile-avatar" onclick="app.changeProfilePhoto()">
+                        ${userPhoto ? 
+                            `<img src="${userPhoto}" alt="${userName}" class="profile-photo">` : 
+                            `<span class="profile-initial">${userInitial}</span>`
+                        }
+                        <div class="photo-overlay">
+                            <span>📷</span>
+                        </div>
                     </div>
-                    <h2>${this.user?.first_name || 'Foydalanuvchi'} ${this.user?.last_name || ''}</h2>
+                    <h2>${userName} ${this.user?.last_name || ''}</h2>
                     ${this.user?.username ? `<p>@${this.user.username}</p>` : ''}
                 </div>
                 
@@ -391,18 +451,6 @@ class SaraUylarApp {
                     </button>
                     <button class="menu-item" onclick="app.showSettings()">
                         ⚙️ Sozlamalar
-                    </button>
-                    <button class="menu-item" onclick="app.showStats()">
-                        📊 Statistika
-                    </button>
-                    <button class="menu-item" onclick="app.showHelp()">
-                        ❓ Yordam
-                    </button>
-                    <button class="menu-item" onclick="app.showAbout()">
-                        ℹ️ Ilova haqida
-                    </button>
-                    <button class="menu-item" onclick="app.logout()" style="color: #dc2626;">
-                        🚪 Chiqish
                     </button>
                 </div>
             </div>
@@ -467,20 +515,48 @@ class SaraUylarApp {
         `;
     }
 
-    async loadListings() {
+    async loadListings(page = 1, search = '', filter = 'all', sort = 'newest') {
         try {
-            const response = await fetch('api/listings.php');
+            const params = new URLSearchParams({
+                page: page.toString(),
+                limit: '20',
+                search,
+                filter,
+                sort
+            });
+            
+            const response = await fetch(`api/listings.php?${params}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             const data = await response.json();
             
             if (data.success) {
                 this.listings = data.listings || [];
+                this.pagination = data.pagination || {};
+                
+                // Update URL without reload
+                const url = new URL(window.location);
+                if (search) url.searchParams.set('search', search);
+                else url.searchParams.delete('search');
+                if (filter !== 'all') url.searchParams.set('filter', filter);
+                else url.searchParams.delete('filter');
+                if (sort !== 'newest') url.searchParams.set('sort', sort);
+                else url.searchParams.delete('sort');
+                if (page > 1) url.searchParams.set('page', page.toString());
+                else url.searchParams.delete('page');
+                
+                window.history.replaceState({}, '', url);
             } else {
                 throw new Error(data.error || 'Ma\'lumotlar yuklanmadi');
             }
         } catch (error) {
             console.error('Listings load error:', error);
-            this.showToast('E\'lonlar yuklanmadi', 'error');
+            this.showToast('E\'lonlar yuklanmadi: ' + error.message, 'error');
             this.listings = [];
+            this.pagination = {};
         }
     }
 
@@ -493,37 +569,52 @@ class SaraUylarApp {
                 <div class="empty-state">
                     <div style="font-size: 4rem; margin-bottom: 1rem;">🏠</div>
                     <h3>E'lonlar topilmadi</h3>
-                    <p>Hozircha bu kategoriyada e'lonlar yo'q</p>
+                    <p>Qidiruv shartlaringizni o'zgartiring yoki yangi e'lon qo'shing</p>
+                    <button class="btn-primary" onclick="app.showPage('add')" style="margin-top: 1rem;">
+                        ➕ E'lon qo'shish
+                    </button>
                 </div>
             `;
             return;
         }
 
-        grid.innerHTML = listings.map(listing => `
-            <div class="listing-card" data-listing-id="${listing.id}">
-                <div class="listing-image">
-                    <img src="${listing.image || 'images/default-house.svg'}" alt="${listing.title}">
-                    <button class="favorite-btn ${this.favorites.includes(listing.id) ? 'active' : ''}" 
-                            data-listing-id="${listing.id}">
-                        ${this.favorites.includes(listing.id) ? '❤️' : '🤍'}
-                    </button>
-                </div>
-                <div class="listing-content">
-                    <h3>${listing.title}</h3>
-                    <div class="price">$${Number(listing.price).toLocaleString()}</div>
-                    <div class="location">📍 ${listing.location}</div>
-                    <div class="features">
-                        🏠 ${this.getPropertyTypeText(listing.property_type)} • 
-                        🚪 ${listing.rooms} xona
-                        ${listing.area ? ` • 📏 ${listing.area}m²` : ''}
+        const listingsHTML = listings.map(listing => {
+            const imageUrl = listing.images && listing.images.length > 0 
+                ? listing.images[0] 
+                : 'images/default-house.svg';
+            
+            const typeText = this.getPropertyTypeText(listing.property_type);
+            const saleType = listing.type === 'rent' ? 'Ijara' : 'Sotish';
+            
+            return `
+                <div class="listing-card" data-listing-id="${listing.id}" style="animation-delay: ${Math.random() * 0.3}s">
+                    <div class="listing-image">
+                        <img src="${imageUrl}" alt="${listing.title}" loading="lazy" onerror="this.src='images/default-house.svg'">
+                        <div class="listing-badge">${saleType}</div>
+                        <button class="favorite-btn ${this.favorites.includes(listing.id) ? 'active' : ''}" 
+                                data-listing-id="${listing.id}" title="Sevimlilar">
+                            ${this.favorites.includes(listing.id) ? '❤️' : '🤍'}
+                        </button>
                     </div>
-                    <div class="listing-meta">
-                        <span>👁️ ${listing.views || 0}</span>
-                        <span>${this.getTimeAgo(listing.created_at)}</span>
+                    <div class="listing-content">
+                        <h3>${this.escapeHtml(listing.title)}</h3>
+                        <div class="price">$${Number(listing.price).toLocaleString()}</div>
+                        <div class="location">📍 ${this.escapeHtml(listing.location)}</div>
+                        <div class="features">
+                            <span>🏠 ${typeText}</span>
+                            <span>🚪 ${listing.rooms} xona</span>
+                            ${listing.area ? `<span>📏 ${listing.area}m²</span>` : ''}
+                        </div>
+                        <div class="listing-meta">
+                            <span>👁️ ${listing.views || 0}</span>
+                            <span>${this.getTimeAgo(listing.created_at)}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
+        
+        grid.innerHTML = listingsHTML;
     }
 
     filterListings(filter) {
@@ -552,43 +643,73 @@ class SaraUylarApp {
         this.renderListings(filtered);
     }
 
-    handleSearch(query) {
-        if (!query.trim()) {
-            this.renderListings();
-            return;
+    async handleSearch(query) {
+        const trimmedQuery = query.trim();
+        
+        // Update URL
+        const url = new URL(window.location);
+        if (trimmedQuery) {
+            url.searchParams.set('search', trimmedQuery);
+        } else {
+            url.searchParams.delete('search');
         }
-
-        const filtered = this.listings.filter(listing =>
-            listing.title.toLowerCase().includes(query.toLowerCase()) ||
-            listing.location.toLowerCase().includes(query.toLowerCase()) ||
-            (listing.description || '').toLowerCase().includes(query.toLowerCase())
-        );
-
-        this.renderListings(filtered);
+        url.searchParams.delete('page'); // Reset to first page
+        window.history.replaceState({}, '', url);
+        
+        // Reload listings with search
+        const filter = document.querySelector('.filter-tab.active')?.dataset.filter || 'all';
+        await this.loadListings(1, trimmedQuery, filter);
+        this.renderListings();
+        this.renderPagination();
     }
 
     async handleAddListing(form) {
-        const formData = new FormData(form);
-        const data = {
-            title: formData.get('title'),
-            description: formData.get('description'),
-            price: parseFloat(formData.get('price')) || 0,
-            location: formData.get('location'),
-            property_type: formData.get('property_type'),
-            rooms: parseInt(formData.get('rooms')) || 1,
-            area: parseFloat(formData.get('area')) || 0,
-            phone: formData.get('phone'),
-            user_id: this.user?.id || Date.now(),
-            images: []
-        };
-
-        // Validation
-        if (!data.title || !data.location || !data.property_type || data.price <= 0) {
-            this.showToast('Barcha majburiy maydonlarni to\'ldiring', 'error');
-            return;
-        }
-
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        
         try {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('btn-loading');
+            submitBtn.textContent = 'Saqlanmoqda';
+            
+            const formData = new FormData(form);
+            const data = {
+                title: formData.get('title')?.trim(),
+                description: formData.get('description')?.trim(),
+                price: parseFloat(formData.get('price')) || 0,
+                location: formData.get('location')?.trim(),
+                property_type: formData.get('property_type'),
+                type: formData.get('type') || 'sale',
+                rooms: parseInt(formData.get('rooms')) || 1,
+                area: parseFloat(formData.get('area')) || 0,
+                phone: formData.get('phone')?.trim(),
+                user_id: this.user?.id || Date.now(),
+                images: []
+            };
+
+            // Client-side validation
+            const errors = [];
+            if (!data.title || data.title.length < 3) {
+                errors.push('Sarlavha kamida 3 ta belgidan iborat bo\'lishi kerak');
+            }
+            if (!data.location || data.location.length < 3) {
+                errors.push('Joylashuv kamida 3 ta belgidan iborat bo\'lishi kerak');
+            }
+            if (!data.property_type) {
+                errors.push('Mulk turini tanlang');
+            }
+            if (data.price <= 0 || data.price > 999999999) {
+                errors.push('Narx noto\'g\'ri');
+            }
+            if (data.phone && !/^[+]?[0-9\s\-\(\)]{7,15}$/.test(data.phone)) {
+                errors.push('Telefon raqami noto\'g\'ri formatda');
+            }
+            
+            if (errors.length > 0) {
+                this.showToast(errors.join(', '), 'error');
+                return;
+            }
+
             const response = await fetch('api/listings.php', {
                 method: 'POST',
                 headers: {
@@ -597,10 +718,15 @@ class SaraUylarApp {
                 body: JSON.stringify(data)
             });
 
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
             const result = await response.json();
             
             if (result.success) {
                 this.showToast('E\'lon muvaffaqiyatli qo\'shildi!', 'success');
+                form.reset();
                 this.showPage('home');
                 await this.loadListings();
             } else {
@@ -608,7 +734,11 @@ class SaraUylarApp {
             }
         } catch (error) {
             console.error('Add listing error:', error);
-            this.showToast('E\'lon qo\'shishda xatolik: ' + error.message, 'error');
+            this.showToast('Xatolik: ' + error.message, 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('btn-loading');
+            submitBtn.textContent = originalText;
         }
     }
 
@@ -741,13 +871,49 @@ class SaraUylarApp {
         const date = new Date(dateString);
         const now = new Date();
         const diff = now - date;
+        const minutes = Math.floor(diff / (1000 * 60));
+        const hours = Math.floor(diff / (1000 * 60 * 60));
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         
+        if (minutes < 1) return 'Hozir';
+        if (minutes < 60) return `${minutes} daqiqa oldin`;
+        if (hours < 24) return `${hours} soat oldin`;
         if (days === 0) return 'Bugun';
         if (days === 1) return 'Kecha';
         if (days < 7) return `${days} kun oldin`;
         if (days < 30) return `${Math.floor(days / 7)} hafta oldin`;
         return `${Math.floor(days / 30)} oy oldin`;
+    }
+    
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    renderPagination() {
+        if (!this.pagination || this.pagination.pages <= 1) return;
+        
+        const grid = document.getElementById('listingsGrid');
+        if (!grid) return;
+        
+        const paginationHTML = `
+            <div class="pagination" style="grid-column: 1 / -1; text-align: center; margin-top: 2rem;">
+                ${this.pagination.page > 1 ? 
+                    `<button class="btn-secondary" onclick="app.loadPage('home', null, ${this.pagination.page - 1})">
+                        ← Oldingi
+                    </button>` : ''}
+                <span style="margin: 0 1rem;">
+                    ${this.pagination.page} / ${this.pagination.pages}
+                </span>
+                ${this.pagination.page < this.pagination.pages ? 
+                    `<button class="btn-secondary" onclick="app.loadPage('home', null, ${this.pagination.page + 1})">
+                        Keyingi →
+                    </button>` : ''}
+            </div>
+        `;
+        
+        grid.insertAdjacentHTML('beforeend', paginationHTML);
     }
 
     debounce(func, wait) {
@@ -760,6 +926,62 @@ class SaraUylarApp {
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
+    }
+    
+    // Profile photo change
+    changeProfilePhoto() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                try {
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    
+                    const response = await fetch('api/upload-image.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        if (this.user) {
+                            this.user.photo_url = result.url;
+                        }
+                        this.renderProfilePage();
+                        this.showToast('Rasm yangilandi', 'success');
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } catch (error) {
+                    this.showToast('Rasm yuklanmadi: ' + error.message, 'error');
+                }
+            }
+        };
+        input.click();
+    }
+    
+    showSkeletonLoading(container) {
+        container.innerHTML = `
+            <div class="skeleton-card">
+                <div class="skeleton skeleton-image"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text short"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton skeleton-image"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text short"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton skeleton-image"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text short"></div>
+            </div>
+        `;
     }
 
     // Additional methods for profile menu
