@@ -35,13 +35,17 @@ class DB {
     
     public function find($table, $id) {
         $records = $this->read($table);
-        return array_filter($records, fn($r) => $r['id'] == $id)[0] ?? null;
+        $filtered = array_filter($records, function($r) use ($id) { return $r['id'] == $id; });
+        return !empty($filtered) ? array_values($filtered)[0] : null;
     }
 }
 
 function getDB() {
     static $db = null;
-    return $db ?: $db = new DB();
+    if ($db === null) {
+        $db = new DB();
+    }
+    return $db;
 }
 
 function sanitize($input) {

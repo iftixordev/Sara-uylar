@@ -9,14 +9,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $input = json_decode(file_get_contents('php://input'), true);
-$action = $input['action'] ?? '';
+$action = isset($input['action']) ? $input['action'] : '';
 
 $db = getDB();
 
 switch ($action) {
     case 'register':
-        $name = sanitize($input['name'] ?? '');
-        $phone = sanitize($input['phone'] ?? '');
+        $name = sanitize(isset($input['name']) ? $input['name'] : '');
+        $phone = sanitize(isset($input['phone']) ? $input['phone'] : '');
         
         if (empty($name) || empty($phone)) {
             exit(json_encode(['error' => 'Ism va telefon raqam kiritish majburiy']));
@@ -49,7 +49,7 @@ switch ($action) {
         break;
         
     case 'login':
-        $phone = sanitize($input['phone'] ?? '');
+        $phone = sanitize(isset($input['phone']) ? $input['phone'] : '');
         
         if (empty($phone)) {
             exit(json_encode(['error' => 'Telefon raqam kiritish majburiy']));

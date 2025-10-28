@@ -10,7 +10,7 @@ try {
             'logged_in' => true,
             'user' => [
                 'id' => $_SESSION['user_id'],
-                'first_name' => $_SESSION['user_name'] ?? 'Foydalanuvchi'
+                'first_name' => isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Foydalanuvchi'
             ]
         ]);
     } else {
