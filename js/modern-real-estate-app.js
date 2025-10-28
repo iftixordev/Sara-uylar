@@ -6,6 +6,7 @@ class SaraUylarApp {
         this.listings = [];
         this.favorites = JSON.parse(localStorage.getItem('sara_favorites') || '[]');
         this.user = null;
+        this.checkAuth();
         this.init();
     }
 
@@ -14,6 +15,32 @@ class SaraUylarApp {
         this.setupRouter();
         this.setupEventListeners();
         this.loadPage('home');
+    }
+
+    async checkAuth() {
+        // Check if user is logged in via session
+        try {
+            const response = await fetch('check_auth.php');
+            const data = await response.json();
+            
+            if (data.logged_in) {
+                this.user = data.user;
+                // Hide login button, show user info
+                const loginBtn = document.getElementById('loginBtn');
+                if (loginBtn) {
+                    loginBtn.style.display = 'none';
+                }
+            } else if (!this.tg) {
+                // If not Telegram WebApp and not logged in, redirect to login
+                window.location.href = 'login.html';
+                return;
+            }
+        } catch (error) {
+            console.error('Auth check error:', error);
+            if (!this.tg) {
+                window.location.href = 'login.html';
+            }
+        }
     }
 
     setupTelegram() {
@@ -375,6 +402,9 @@ class SaraUylarApp {
                     </button>
                     <button class="menu-item" onclick="app.showAbout()">
                         ℹ️ Ilova haqida
+                    </button>
+                    <button class="menu-item" onclick="app.logout()" style="color: #dc2626;">
+                        🚪 Chiqish
                     </button>
                 </div>
             </div>
@@ -852,6 +882,28 @@ class SaraUylarApp {
                 </div>
             </div>
         `;
+    }
+
+    async logout() {
+        try {
+            const response = await fetch('auth.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'logout' })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showToast('Tizimdan chiqdingiz', 'success');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1000);
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+            this.showToast('Chiqishda xatolik', 'error');
+        }
     }
 }
 
