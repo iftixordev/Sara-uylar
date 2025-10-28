@@ -3,6 +3,12 @@ require_once '../config.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit(0);
+}
 
 $db = getDB();
 $id = intval($_GET['id'] ?? 0);
@@ -27,6 +33,7 @@ $listings = $db->read('listings');
 foreach ($listings as &$l) {
     if ($l['id'] == $id) {
         $l['views'] = $listing['views'];
+        $l['updated_at'] = date('Y-m-d H:i:s');
         break;
     }
 }

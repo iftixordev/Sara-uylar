@@ -544,14 +544,21 @@ class SaraUylarApp {
         const data = {
             title: formData.get('title'),
             description: formData.get('description'),
-            price: formData.get('price'),
+            price: parseFloat(formData.get('price')) || 0,
             location: formData.get('location'),
             property_type: formData.get('property_type'),
-            rooms: formData.get('rooms'),
-            area: formData.get('area'),
+            rooms: parseInt(formData.get('rooms')) || 1,
+            area: parseFloat(formData.get('area')) || 0,
             phone: formData.get('phone'),
-            user_id: this.user?.id || Date.now()
+            user_id: this.user?.id || Date.now(),
+            images: []
         };
+
+        // Validation
+        if (!data.title || !data.location || !data.property_type || data.price <= 0) {
+            this.showToast('Barcha majburiy maydonlarni to\'ldiring', 'error');
+            return;
+        }
 
         try {
             const response = await fetch('api/listings.php', {
@@ -573,7 +580,7 @@ class SaraUylarApp {
             }
         } catch (error) {
             console.error('Add listing error:', error);
-            this.showToast('E\'lon qo\'shishda xatolik', 'error');
+            this.showToast('E\'lon qo\'shishda xatolik: ' + error.message, 'error');
         }
     }
 

@@ -7,7 +7,7 @@
         "price": 85000,
         "currency": "USD",
         "location": "Toshkent, Yunusobod",
-        "property_type": "kvartira",
+        "property_type": "apartment",
         "rooms": 3,
         "area": 75.5,
         "floor": 5,
@@ -28,7 +28,7 @@
         "price": 120000,
         "currency": "USD",
         "location": "Qo'qon, Markaz",
-        "property_type": "uy",
+        "property_type": "house",
         "rooms": 5,
         "area": 150,
         "floor": 1,
@@ -42,10 +42,10 @@
         "updated_at": "2024-01-15 11:00:00"
     },
     {
-        "title": "3 hobnail uy",
+        "title": "3 xonali uy",
         "description": "uy sotaman",
         "price": 1000,
-        "property_type": "uy",
+        "property_type": "house",
         "rooms": 4,
         "area": 100,
         "location": "Samarqand",
@@ -54,7 +54,7 @@
         "images": [
             "uploads\/68e8feee25ba0.jpg"
         ],
-        "status": "pending",
+        "status": "approved",
         "views": 0,
         "id": 3,
         "created_at": "2025-10-10 17:41:18",
