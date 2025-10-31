@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cache Tozalash - Sara Uylar</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: white;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .status {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🧹</div>
+        <h1>Cache Tozalash</h1>
+        <p>Saytning yangi versiyasini ko'rish uchun cache tozalanmoqda...</p>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="status" id="status">Boshlash...</div>
+        
+        <div style="margin-top: 2rem;">
+            <button class="btn" onclick="clearAllCache()">🗑️ To'liq Tozalash</button>
+            <a href="index.html" class="btn">🏠 Saytga O'tish</a>
+        </div>
+    </div>
+
+    <script>
+        let progress = 0;
+        const progressBar = document.getElementById('progressBar');
+        const status = document.getElementById('status');
+        
+        function updateProgress(percent, message) {
+            progress = percent;
+            progressBar.style.width = percent + '%';
+            status.textContent = message;
+        }
+        
+        async function clearAllCache() {
+            updateProgress(10, 'LocalStorage tozalanmoqda...');
+            
+            // Clear localStorage
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            updateProgress(30, 'Service Worker cache tozalanmoqda...');
+            
+            // Clear Service Worker cache
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(
+                    cacheNames.map(cacheName => caches.delete(cacheName))
+                );
+            }
+            
+            updateProgress(50, 'Service Worker yangilanmoqda...');
+            
+            // Update Service Worker
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                    await registration.update();
+                    await registration.unregister();
+                }
+            }
+            
+            updateProgress(70, 'Browser cache tozalanmoqda...');
+            
+            // Clear browser cache via API call
+            try {
+                await fetch('/clear-cache.php?t=' + Date.now(), {
+                    cache: 'no-cache',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+            } catch (e) {
+                console.log('Server cache clear failed:', e);
+            }
+            
+            updateProgress(90, 'Yakunlanmoqda...');
+            
+            // Force reload with cache bypass
+            setTimeout(() => {
+                updateProgress(100, 'Tayyor! Sahifa yangilanmoqda...');
+                setTimeout(() => {
+                    window.location.href = 'index.html?v=' + Date.now() + '&cache_cleared=1';
+                }, 1000);
+            }, 500);
+        }
+        
+        // Auto start cache clearing
+        setTimeout(() => {
+            clearAllCache();
+        }, 1000);
+        
+        // Prevent back button
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    </script>
+</body>
+</html>

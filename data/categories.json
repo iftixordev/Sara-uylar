@@ -1,50 +1,30 @@
 [
-    {
-        "id": 1,
-        "name": "Kvartira",
-        "slug": "apartment",
-        "icon": "🏠",
-        "description": "Turar joy kvartiralari",
-        "count": 0
-    },
-    {
-        "id": 2,
-        "name": "Uy",
-        "slug": "house", 
-        "icon": "🏡",
-        "description": "Shaxsiy uylar",
-        "count": 0
-    },
-    {
-        "id": 3,
-        "name": "Tijorat",
-        "slug": "commercial",
-        "icon": "🏢",
-        "description": "Tijorat ob'ektlari",
-        "count": 0
-    },
-    {
-        "id": 4,
-        "name": "Ofis",
-        "slug": "office",
-        "icon": "🏢",
-        "description": "Ofis binolari",
-        "count": 0
-    },
-    {
-        "id": 5,
-        "name": "Do'kon",
-        "slug": "shop",
-        "icon": "🏪",
-        "description": "Savdo ob'ektlari",
-        "count": 0
-    },
-    {
-        "id": 6,
-        "name": "Yer",
-        "slug": "land",
-        "icon": "🌍",
-        "description": "Yer uchastkalari",
-        "count": 0
-    }
+  {
+    "id": "apartment",
+    "name": "Kvartira",
+    "icon": "🏢",
+    "description": "Turmush binolaridagi kvartiralar",
+    "count": 6
+  },
+  {
+    "id": "house",
+    "name": "Uy",
+    "icon": "🏠",
+    "description": "Hovli uylari va dachalar",
+    "count": 4
+  },
+  {
+    "id": "commercial",
+    "name": "Tijorat",
+    "icon": "🏪",
+    "description": "Do'kon, omborxona va tijorat binolari",
+    "count": 1
+  },
+  {
+    "id": "office",
+    "name": "Ofis",
+    "icon": "🏢",
+    "description": "Ofis binolari va ish joylari",
+    "count": 1
+  }
 ]

@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Styles -->
-    <link rel="stylesheet" href="css/modern-real-estate.css">
+    <link rel="stylesheet" href="css/modern-real-estate.css?v=2.1.0">
     
     <!-- PWA Meta -->
     <meta name="theme-color" content="#2563eb">
@@ -19,8 +19,32 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Sara Uylar">
     
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <!-- Telegram Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Force reload script -->
+    <script>
+        // Cache busting
+        const currentVersion = '2.1.0';
+        const storedVersion = localStorage.getItem('sara_version');
+        
+        if (storedVersion !== currentVersion) {
+            localStorage.setItem('sara_version', currentVersion);
+            if (storedVersion && 'caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                });
+            }
+            if (storedVersion) {
+                window.location.reload(true);
+            }
+        }
+    </script>
 </head>
 <body>
     <!-- Pull to Refresh Indicator -->
@@ -31,10 +55,18 @@
     <!-- Header -->
     <header class="header">
         <div class="header-content">
-            <div class="logo">🏠 Sara Uylar</div>
+            <div class="logo">
+                <span class="logo-icon">🏠</span>
+                <span class="logo-text">Sara Uylar</span>
+                <span class="logo-badge">Pro</span>
+            </div>
             <div class="header-actions">
-                <button class="btn-icon" id="profileBtn" data-page="profile">👤</button>
-                <button class="btn-icon" id="themeToggle">🌙</button>
+                <button class="btn-icon notification-btn" id="notificationBtn" title="Bildirishnomalar">
+                    🔔
+                    <span class="notification-dot"></span>
+                </button>
+                <button class="btn-icon" id="profileBtn" data-page="profile" title="Profil">👤</button>
+                <button class="btn-icon" id="themeToggle" title="Rejim o'zgartirish">🌙</button>
             </div>
         </div>
     </header>
@@ -56,12 +88,39 @@
         <button class="filter-tab" data-filter="house">Uy</button>
     </div>
 
+    <!-- Welcome Banner -->
+    <div class="welcome-banner" id="welcomeBanner" style="display: none;">
+        <div class="welcome-content">
+            <h2>🎉 Xush kelibsiz!</h2>
+            <p>Sara Uylar platformasida orzuingizdagi uyni toping</p>
+            <div class="quick-stats">
+                <div class="quick-stat">
+                    <div class="quick-stat-number" id="totalListings">0</div>
+                    <div class="quick-stat-label">E'lonlar</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="quick-stat-number" id="todayListings">0</div>
+                    <div class="quick-stat-label">Bugun</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="quick-stat-number" id="userFavorites">0</div>
+                    <div class="quick-stat-label">Sevimli</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <main class="main-content">
         <div class="listings-grid" id="listingsGrid">
             <!-- Listings will be loaded here -->
         </div>
     </main>
+    
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="app.showPage('add')" title="Yangi e'lon qo'shish">
+        ➕
+    </button>
 
 
 
@@ -89,10 +148,10 @@
     <div id="toastContainer"></div>
 
     <!-- Scripts -->
-    <script src="js/modern-real-estate-app.js"></script>
+    <script src="js/modern-real-estate-app.js?v=2.1.0"></script>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json?v=2.1.0">
     
     <!-- iOS PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -509,6 +568,152 @@
         .notification-time {
             color: var(--text-secondary);
             font-size: 0.8rem;
+        }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.05));
+            padding: 1.5rem;
+            margin: 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            animation: welcomeGlow 4s ease-in-out infinite;
+        }
+        
+        @keyframes welcomeGlow {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+        }
+        
+        .welcome-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .welcome-banner h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .welcome-banner p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .quick-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1rem;
+        }
+        
+        .quick-stat {
+            text-align: center;
+        }
+        
+        .quick-stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .quick-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 1.5rem;
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 99;
+            animation: fabPulse 3s infinite;
+        }
+        
+        @keyframes fabPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .fab:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+        }
+        
+        /* Header Improvements */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 1.8rem;
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-3px) rotate(2deg); }
+        }
+        
+        .logo-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .notification-btn {
+            position: relative;
+        }
+        
+        .notification-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            border: 2px solid white;
+            animation: notificationPulse 2s infinite;
+        }
+        
+        @keyframes notificationPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
         }
 
         /* About & Help Styles */

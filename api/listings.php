@@ -10,6 +10,13 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('X-XSS-Protection: 1; mode=block');
 
+// Cache busting headers
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+header('ETag: "' . md5(time()) . '"');
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
@@ -84,7 +91,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 'limit' => $limit,
                 'total' => $total,
                 'pages' => ceil($total / $limit)
-            ]
+            ],
+            'timestamp' => time(),
+            'cache_bust' => md5(time())
         ]);
         break;
         

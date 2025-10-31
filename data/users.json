@@ -1,1 +1,110 @@
-[]
+[
+  {
+    "id": 123456789,
+    "first_name": "Akmal",
+    "last_name": "Karimov",
+    "username": "akmal_k",
+    "join_date": 1704067200,
+    "last_activity": "2024-01-15 12:00:00",
+    "total_messages": 15
+  },
+  {
+    "id": 123456790,
+    "first_name": "Dilnoza",
+    "last_name": "Abdullayeva",
+    "username": "dilnoza_a",
+    "join_date": 1703980800,
+    "last_activity": "2024-01-14 16:30:00",
+    "total_messages": 8
+  },
+  {
+    "id": 123456791,
+    "first_name": "Bobur",
+    "last_name": "Toshmatov",
+    "username": "bobur_t",
+    "join_date": 1703894400,
+    "last_activity": "2024-01-13 11:45:00",
+    "total_messages": 12
+  },
+  {
+    "id": 123456792,
+    "first_name": "Malika",
+    "last_name": "Nazarova",
+    "username": "malika_n",
+    "join_date": 1703808000,
+    "last_activity": "2024-01-12 18:20:00",
+    "total_messages": 6
+  },
+  {
+    "id": 123456793,
+    "first_name": "Sardor",
+    "last_name": "Rahimov",
+    "username": "sardor_r",
+    "join_date": 1703721600,
+    "last_activity": "2024-01-11 13:15:00",
+    "total_messages": 20
+  },
+  {
+    "id": 123456794,
+    "first_name": "Nigora",
+    "last_name": "Yusupova",
+    "username": "nigora_y",
+    "join_date": 1703635200,
+    "last_activity": "2024-01-10 15:30:00",
+    "total_messages": 9
+  },
+  {
+    "id": 123456795,
+    "first_name": "Jasur",
+    "last_name": "Mirzayev",
+    "username": "jasur_m",
+    "join_date": 1703548800,
+    "last_activity": "2024-01-09 10:45:00",
+    "total_messages": 4
+  },
+  {
+    "id": 123456796,
+    "first_name": "Zarina",
+    "last_name": "Saidova",
+    "username": "zarina_s",
+    "join_date": 1703462400,
+    "last_activity": "2024-01-08 17:00:00",
+    "total_messages": 11
+  },
+  {
+    "id": 123456797,
+    "first_name": "Eldor",
+    "last_name": "Hasanov",
+    "username": "eldor_h",
+    "join_date": 1703376000,
+    "last_activity": "2024-01-07 14:20:00",
+    "total_messages": 25
+  },
+  {
+    "id": 123456798,
+    "first_name": "Sevara",
+    "last_name": "Ibragimova",
+    "username": "sevara_i",
+    "join_date": 1703289600,
+    "last_activity": "2024-01-06 12:30:00",
+    "total_messages": 7
+  },
+  {
+    "id": 123456799,
+    "first_name": "Otabek",
+    "last_name": "Normatov",
+    "username": "otabek_n",
+    "join_date": 1703203200,
+    "last_activity": "2024-01-05 16:45:00",
+    "total_messages": 13
+  },
+  {
+    "id": 123456800,
+    "first_name": "Gulnora",
+    "last_name": "Azimova",
+    "username": "gulnora_a",
+    "join_date": 1703116800,
+    "last_activity": "2024-01-04 10:15:00",
+    "total_messages": 3
+  }
+]

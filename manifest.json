@@ -2,11 +2,12 @@
   "name": "Sara Uylar - Ko'chmas Mulk Platformasi",
   "short_name": "Sara Uylar",
   "description": "Professional ko'chmas mulk e'lonlari platformasi Telegram Web App sifatida",
-  "start_url": "/",
+  "start_url": "/?v=2.1.0",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#2563eb",
+  "theme_color": "#667eea",
+  "version": "2.1.0",
   "categories": ["business", "productivity", "lifestyle"],
   "lang": "uz",
   "scope": "/",
@@ -29,7 +30,7 @@
       "name": "E'lon qo'shish",
       "short_name": "Qo'shish",
       "description": "Yangi e'lon qo'shish",
-      "url": "/#add-listing",
+      "url": "/#add?v=2.1.0",
       "icons": [{
         "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E➕%3C/text%3E%3C/svg%3E",
         "sizes": "96x96"
@@ -39,7 +40,7 @@
       "name": "Qidiruv",
       "short_name": "Qidiruv", 
       "description": "E'lonlarni qidirish",
-      "url": "/#search",
+      "url": "/#search?v=2.1.0",
       "icons": [{
         "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🔍%3C/text%3E%3C/svg%3E",
         "sizes": "96x96"

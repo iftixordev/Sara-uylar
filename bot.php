@@ -370,47 +370,110 @@ if ($callbackQuery) {
     }
 }
 
-// Inline query handler
+// Inline query handler with smart search
 if ($inlineQuery) {
     $query = trim($inlineQuery['query']);
     $results = [];
     
     if (strlen($query) >= 2) {
-        $db = getDB();
-        $listings = array_filter($db->read('listings'), fn($l) => ($l['status'] ?? 'approved') === 'approved');
+        // Use smart search API
+        $smartSearchUrl = WEBAPP_URL . '/api/smart-search.php?q=' . urlencode($query);
+        $searchResponse = @file_get_contents($smartSearchUrl);
+        $searchData = json_decode($searchResponse, true);
         
-        $filtered = array_filter($listings, function($listing) use ($query) {
-            return stripos($listing['title'], $query) !== false ||
-                   stripos($listing['location'], $query) !== false ||
-                   stripos($listing['description'] ?? '', $query) !== false;
-        });
-        
-        foreach (array_slice($filtered, 0, 10) as $listing) {
-            $description = substr($listing['description'] ?? '', 0, 80);
-            if (strlen($listing['description'] ?? '') > 80) $description .= '...';
+        if ($searchData && $searchData['success']) {
+            $listings = array_slice($searchData['results'], 0, 10);
             
-            $results[] = [
-                'type' => 'article',
-                'id' => (string)$listing['id'],
-                'title' => $listing['title'],
-                'description' => "💰 $" . number_format($listing['price']) . " • 📍 " . $listing['location'],
-                'input_message_content' => [
-                    'message_text' => "🏠 *{$listing['title']}*\n\n💰 *Narx:* $" . number_format($listing['price']) . 
-                                    "\n📍 *Joylashuv:* {$listing['location']}" .
-                                    "\n🏠 *Turi:* " . ucfirst($listing['property_type']) .
-                                    "\n🚪 *Xonalar:* {$listing['rooms']}" .
-                                    "\n📏 *Maydon:* {$listing['area']}m²\n\n" . $description,
-                    'parse_mode' => 'Markdown'
-                ],
-                'reply_markup' => [
-                    'inline_keyboard' => [
-                        [
-                            ['text' => '👁️ To\'liq ko\'rish', 'web_app' => ['url' => $webappUrl . '/#listing-' . $listing['id']]],
-                            ['text' => '💬 Bog\'lanish', 'url' => 'https://t.me/SaraUylarbot?start=contact_' . $listing['user_id']]
+            foreach ($listings as $listing) {
+                $description = substr($listing['description'] ?? '', 0, 80);
+                if (strlen($listing['description'] ?? '') > 80) $description .= '...';
+                
+                // Add search score indicator
+                $scoreEmoji = $listing['search_score'] > 90 ? '🎯' : ($listing['search_score'] > 70 ? '✨' : '📍');
+                
+                $results[] = [
+                    'type' => 'article',
+                    'id' => (string)$listing['id'],
+                    'title' => $scoreEmoji . ' ' . $listing['title'],
+                    'description' => "💰 $" . number_format($listing['price']) . " • 📍 " . $listing['location'] . " • Match: " . round($listing['search_score']) . "%",
+                    'input_message_content' => [
+                        'message_text' => "🏠 *{$listing['title']}*\n\n💰 *Narx:* $" . number_format($listing['price']) . 
+                                        "\n📍 *Joylashuv:* {$listing['location']}" .
+                                        "\n🏠 *Turi:* " . ucfirst($listing['property_type']) .
+                                        "\n🚪 *Xonalar:* {$listing['rooms']}" .
+                                        "\n📏 *Maydon:* {$listing['area']}m²" .
+                                        "\n👁️ *Ko'rishlar:* " . ($listing['views'] ?? 0) .
+                                        "\n\n" . $description .
+                                        "\n\n🎯 *Qidiruv mos kelishi:* " . round($listing['search_score']) . "%",
+                        'parse_mode' => 'Markdown'
+                    ],
+                    'reply_markup' => [
+                        'inline_keyboard' => [
+                            [
+                                ['text' => '👁️ To\'liq ko\'rish', 'web_app' => ['url' => $webappUrl . '/#listing-' . $listing['id']]],
+                                ['text' => '💬 Bog\'lanish', 'url' => 'https://t.me/SaraUylarbot?start=contact_' . $listing['user_id']]
+                            ],
+                            [
+                                ['text' => '❤️ Sevimlilar', 'callback_data' => 'fav_' . $listing['id']],
+                                ['text' => '📤 Ulashish', 'callback_data' => 'share_' . $listing['id']]
+                            ]
                         ]
                     ]
-                ]
-            ];
+                ];
+            }
+            
+            // Add suggestions if available
+            if (!empty($searchData['suggestions'])) {
+                $suggestions = implode(', ', array_slice($searchData['suggestions'], 0, 3));
+                $results[] = [
+                    'type' => 'article',
+                    'id' => 'suggestions',
+                    'title' => '💡 Tavsiyalar: ' . $suggestions,
+                    'description' => 'Qidiruv uchun tavsiyalar',
+                    'input_message_content' => [
+                        'message_text' => "💡 *Qidiruv takliflari:*\n\n" . implode("\n", array_map(fn($s) => "• $s", $searchData['suggestions'])),
+                        'parse_mode' => 'Markdown'
+                    ]
+                ];
+            }
+        } else {
+            // Fallback to basic search
+            $db = getDB();
+            $listings = array_filter($db->read('listings'), fn($l) => ($l['status'] ?? 'approved') === 'approved');
+            
+            $filtered = array_filter($listings, function($listing) use ($query) {
+                return stripos($listing['title'], $query) !== false ||
+                       stripos($listing['location'], $query) !== false ||
+                       stripos($listing['description'] ?? '', $query) !== false;
+            });
+            
+            foreach (array_slice($filtered, 0, 10) as $listing) {
+                $description = substr($listing['description'] ?? '', 0, 80);
+                if (strlen($listing['description'] ?? '') > 80) $description .= '...';
+                
+                $results[] = [
+                    'type' => 'article',
+                    'id' => (string)$listing['id'],
+                    'title' => $listing['title'],
+                    'description' => "💰 $" . number_format($listing['price']) . " • 📍 " . $listing['location'],
+                    'input_message_content' => [
+                        'message_text' => "🏠 *{$listing['title']}*\n\n💰 *Narx:* $" . number_format($listing['price']) . 
+                                        "\n📍 *Joylashuv:* {$listing['location']}" .
+                                        "\n🏠 *Turi:* " . ucfirst($listing['property_type']) .
+                                        "\n🚪 *Xonalar:* {$listing['rooms']}" .
+                                        "\n📏 *Maydon:* {$listing['area']}m²\n\n" . $description,
+                        'parse_mode' => 'Markdown'
+                    ],
+                    'reply_markup' => [
+                        'inline_keyboard' => [
+                            [
+                                ['text' => '👁️ To\'liq ko\'rish', 'web_app' => ['url' => $webappUrl . '/#listing-' . $listing['id']]],
+                                ['text' => '💬 Bog\'lanish', 'url' => 'https://t.me/SaraUylarbot?start=contact_' . $listing['user_id']]
+                            ]
+                        ]
+                    ]
+                ];
+            }
         }
         
         if (empty($results)) {
